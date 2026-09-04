@@ -22,8 +22,8 @@ pip install -r requirements.txt
 ## CLI
 
 ```bash
-python3 -m watermark_remover.cli inspect path/to/file
-python3 -m watermark_remover.cli clean path/to/file -o path/to/file.cleaned.ext
+python -m watermark_remover.cli inspect path/to/file
+python -m watermark_remover.cli clean path/to/file -o path/to/file.cleaned.ext
 ```
 
 `clean` prints a before/after report and exits non-zero if it can't verify the file is fully clean.
@@ -31,7 +31,7 @@ python3 -m watermark_remover.cli clean path/to/file -o path/to/file.cleaned.ext
 ## Web app
 
 ```bash
-python3 -m watermark_remover.webapp
+python -m watermark_remover.webapp
 # http://127.0.0.1:8765
 ```
 
@@ -41,7 +41,7 @@ Upload a file, get a before/after report and a download link for the cleaned fil
 
 ```bash
 pip install pytest
-python3 -m pytest tests/ -v
+python -m pytest tests/ -v
 ```
 
 ## Credit
