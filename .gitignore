@@ -4,3 +4,8 @@ __pycache__/
 venv/
 *.cleaned.*
 .pytest_cache/
+
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep

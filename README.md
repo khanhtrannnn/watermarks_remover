@@ -21,6 +21,22 @@ pip install -r requirements.txt
 
 ## CLI
 
+Simplest way: drop your file into the `input/` folder of this cloned repo, then run without any path — the cleaned file lands in `output/` automatically:
+
+```bash
+# put your file in input/, e.g. input/report.docx
+python -m watermark_remover.cli inspect          # scans the single file in input/
+python -m watermark_remover.cli clean            # writes output/report.cleaned.docx
+```
+
+If `input/` has more than one file, pass the filename (still resolved from `input/` if it's a bare name):
+
+```bash
+python -m watermark_remover.cli clean report.docx
+```
+
+You can still pass any explicit path (absolute or relative) instead, with `-o` to control where the cleaned file goes:
+
 ```bash
 python -m watermark_remover.cli inspect path/to/file
 python -m watermark_remover.cli clean path/to/file -o path/to/file.cleaned.ext
