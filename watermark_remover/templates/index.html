@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Watermark Remover</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #1a1a1a; }
+    h1 { font-size: 1.4rem; }
+    form { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    label { display: block; margin: 8px 0; }
+    button { background: #1a1a1a; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    .ok { color: #0a7a2f; font-weight: bold; }
+    .warn { color: #b45309; font-weight: bold; }
+    .error { color: #b91c1c; }
+    pre { background: #f6f6f6; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+    td, th { border: 1px solid #ddd; padding: 4px 8px; text-align: left; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Watermark / AI-provenance Remover</h1>
+  <p>Xóa watermark ẩn (Unicode vô hình, EXIF/XMP/C2PA, thuộc tính tài liệu) khỏi file, và xác nhận lại sau khi xóa.</p>
+
+  <form method="post" action="{{ url_for('clean_upload') }}" enctype="multipart/form-data">
+    <label>File: <input type="file" name="file" required></label>
+    <label><input type="checkbox" name="normalize_spaces" checked> Chuẩn hóa khoảng trắng bất thường (chỉ áp dụng cho text)</label>
+    <button type="submit">Clean &amp; Verify</button>
+  </form>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  {% if result %}
+    <h2>Kết quả: {{ result.filename }} ({{ result.kind }})</h2>
+    {% if result.verified_clean %}
+      <p class="ok">✔ Đã xác nhận: không còn dấu hiệu watermark/provenance nào được phát hiện.</p>
+    {% else %}
+      <p class="warn">⚠ Không thể xác nhận file đã sạch hoàn toàn — vẫn còn {{ result.after.indicator_count }} dấu hiệu, hoặc định dạng này chỉ được hỗ trợ ở mức phát hiện.</p>
+    {% endif %}
+    {% if result.note %}
+      <p><em>{{ result.note }}</em></p>
+    {% endif %}
+
+    <table>
+      <tr><th></th><th>Trước</th><th>Sau</th></tr>
+      <tr><td>Số dấu hiệu</td><td>{{ result.before.indicator_count }}</td><td>{{ result.after.indicator_count }}</td></tr>
+    </table>
+
+    <p><strong>Chi tiết trước khi xóa:</strong></p>
+    <pre>{{ result.before.categories }}</pre>
+    <p><strong>Chi tiết sau khi xóa:</strong></p>
+    <pre>{{ result.after.categories }}</pre>
+
+    <p><a href="{{ result.download_url }}">Tải file đã làm sạch</a></p>
+  {% endif %}
+</body>
+</html>
