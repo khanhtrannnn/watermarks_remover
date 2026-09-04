@@ -10,16 +10,37 @@ from pathlib import Path
 from . import cleaner, detector
 
 
+def _fail(message: str) -> None:
+    print(message, file=sys.stderr)
+    raise SystemExit(2)
+
+
+def _read_input(path: Path) -> bytes:
+    if not path.exists():
+        _fail(
+            f"error: file not found: {path}\n"
+            "(replace the path with a real file on your machine, e.g. C:\\Users\\you\\Documents\\notes.txt "
+            "or ./notes.txt — 'path/to/file' in the README is a placeholder, not a literal path)"
+        )
+    if path.is_dir():
+        _fail(f"error: '{path}' is a directory, not a file")
+    try:
+        return path.read_bytes()
+    except PermissionError:
+        _fail(f"error: permission denied reading '{path}'")
+
+
 def _cmd_inspect(args: argparse.Namespace) -> int:
-    data = Path(args.file).read_bytes()
-    report = detector.inspect(Path(args.file).name, data, force_text=args.force_text)
+    in_path = Path(args.file)
+    data = _read_input(in_path)
+    report = detector.inspect(in_path.name, data, force_text=args.force_text)
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 1 if report["suspicious"] else 0
 
 
 def _cmd_clean(args: argparse.Namespace) -> int:
     in_path = Path(args.file)
-    data = in_path.read_bytes()
+    data = _read_input(in_path)
     try:
         result = cleaner.clean(
             in_path.name, data, normalize_spaces=not args.no_normalize_spaces, force_text=args.force_text

@@ -1,9 +1,11 @@
 from io import BytesIO
 
+import pytest
 from PIL import Image
 from pypdf import PdfWriter
 
 from watermark_remover import cleaner, detector, formats, text_layer
+from watermark_remover.cli import main as cli_main
 
 
 def test_classify_text():
@@ -61,6 +63,14 @@ def test_pdf_metadata_stripped():
     result = cleaner.clean("doc.pdf", data)
     assert result["verified_clean"] is True
     assert result["after"]["indicator_count"] == 0
+
+
+def test_cli_missing_file_gives_friendly_error(capsys):
+    with pytest.raises(SystemExit):
+        cli_main(["inspect", "does/not/exist.txt"])
+    captured = capsys.readouterr()
+    assert "file not found" in captured.err
+    assert "Traceback" not in captured.err
 
 
 def test_unknown_format_rejected():
